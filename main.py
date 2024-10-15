@@ -9,7 +9,8 @@ from telegram.ext import (Application, ApplicationBuilder, CommandHandler, Messa
                             filters, ContextTypes, ConversationHandler)
 
 # Define conversation states
-MOVIE_NAME, MOVIE_INFO, MOVIE_INFORMATION, YOUR_IDEA, WHY_SUGGEST = range(5)
+MOVIE_NAME, MOVIE_INFO, MOVIE_INFORMATION, YOUR_IDEA, WHY_SUGGEST, MOVIE_PICTURE = range(6)
+
 
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TEKEN")
 BOT_USERNAME: Final = '@denalie_movie_bot'
@@ -69,6 +70,9 @@ async def get_your_idea(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['why_suggest'] = update.message.text
 
+    photo_file = update.message.photo[-1].file_id
+    context.user_data['movie_picture'] = photo_file
+
     username = update.message.from_user.username or "unknown"
 
     # Format the message
@@ -78,16 +82,18 @@ async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     your_idea = context.user_data['your_idea']
     why_suggest = context.user_data['why_suggest']
 
-    response_message = (f"🎬 *Movie Introduction:*\n\n"
+    response_message = (f"🎬 *Suggested Movie:*\n\n"
                         f"#IntroducedMovie\n\n"
                         f"The user @{username} suggested: \n\n"
                         f"*Name:* {movie_name}\n"
                         f"*Basic Info:* {movie_info}\n"
                         f"*Additional Info:* {movie_information}\n"
                         f"*Your Idea:* {your_idea}\n"
-                        f"*Why Suggest:* {why_suggest}")
+                        f"*Why Suggest:* {why_suggest}\n\n"
+                        f"Thank you for your suggestion!")
 
-    await update.message.reply_text(response_message, parse_mode='Markdown')  # Send the formatted message
+    await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo_file, caption=response_message, parse_mode='Markdown')
+
 
     # Clear user data after processing
     context.user_data.clear()
@@ -159,6 +165,7 @@ if __name__ == '__main__':
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('introduce_movie', introduce_movie)],
         states={
+            MOVIE_PICTURE: [MessageHandler(filters.PHOTO, get_why_suggest)],
             MOVIE_NAME: [MessageHandler(filters.TEXT, get_movie_name)],
             MOVIE_INFO: [MessageHandler(filters.TEXT, get_movie_info)],
             MOVIE_INFORMATION: [MessageHandler(filters.TEXT, get_movie_information)],
@@ -172,6 +179,7 @@ if __name__ == '__main__':
 
     # Messages
     app.add_handler(MessageHandler(filters.TEXT, handle_message))
+
 
     # Errors
     app.add_error_handler(error)
