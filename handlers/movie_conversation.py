@@ -49,7 +49,8 @@ async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 async def get_movie_awards(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['movie_awards'] = update.message.text
     await update.message.reply_text('مهمترین جایزه دریافتی فیلم را وارد کنید:')
-    return MOVIE_AWARDS
+    # return MOVIE_AWARDS
+    return MOVIE_PICTURE
 
 
 async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

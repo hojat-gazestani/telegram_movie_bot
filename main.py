@@ -7,6 +7,7 @@ from handlers.movie_conversation import (get_movie_name_fa, get_movie_name_en,
                                          get_director_name, get_movie_ratings,
                                          get_why_suggest, get_movie_awards,
                                          get_movie_picture, cancel)
+from handlers.utils import handle_message, error
 
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TEKEN")
 
@@ -32,10 +33,18 @@ if __name__ == '__main__':
             4: [MessageHandler(filters.TEXT, get_movie_ratings)],
             5: [MessageHandler(filters.TEXT, get_why_suggest)],
             6: [MessageHandler(filters.TEXT, get_movie_awards)],
-            6: [MessageHandler(filters.PHOTO, get_movie_picture)],
+            7: [MessageHandler(filters.PHOTO, get_movie_picture)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )
+
+    app.add_handler(conv_handler)
+
+    # Messages
+    app.add_handler(MessageHandler(filters.TEXT, handle_message))
+
+    # Errors
+    app.add_error_handler(error)
 
     print('Polling ...')
     app.run_polling(poll_interval=0.5)
