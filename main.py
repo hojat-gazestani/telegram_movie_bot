@@ -7,9 +7,10 @@ from handlers.movie_conversation import (get_movie_name_fa, get_movie_name_en,
                                          get_director_name, get_movie_ratings,
                                          get_why_suggest, get_movie_awards,
                                          get_movie_picture, cancel)
-from handlers.utils import handle_message, error
+from handlers.utils import handle_message, handle_response, error
 
-TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TEKEN")
+
+TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
 
 if __name__ == '__main__':
     print("Starting bot...")
