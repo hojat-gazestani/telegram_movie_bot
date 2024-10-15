@@ -70,8 +70,12 @@ async def get_your_idea(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['why_suggest'] = update.message.text
 
-    photo_file = update.message.photo[-1].file_id
-    context.user_data['movie_picture'] = photo_file
+    if update.message.photo:
+        photo_file = update.message.photo[-1].file_id
+        context.user_data['movie_picture'] = photo_file
+    else:
+        await update.message.reply_text('لطفا یک عکس فیلم را ارسال کنید:')
+        return MOVIE_PICTURE
 
     username = update.message.from_user.username or "unknown"
 
