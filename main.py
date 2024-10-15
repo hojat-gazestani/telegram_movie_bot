@@ -8,6 +8,8 @@ from telegram import Bot, Update
 from telegram.ext import (Application, ApplicationBuilder, CommandHandler, MessageHandler,
                             filters, ContextTypes, ConversationHandler)
 
+# Define conversation states
+MOVIE_NAME, MOVIE_INFO, MOVIE_INFORMATION, YOUR_IDEA, WHY_SUGGEST = range(5)
 
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TEKEN")
 BOT_USERNAME: Final = '@denalie_movie_bot'
