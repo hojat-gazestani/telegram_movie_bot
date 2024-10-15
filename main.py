@@ -69,6 +69,8 @@ async def get_your_idea(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['why_suggest'] = update.message.text
 
+    username = update.message.from_user.username or "unknown"
+
     # Format the message
     movie_name = context.user_data['movie_name']
     movie_info = context.user_data['movie_info']
@@ -77,7 +79,8 @@ async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     why_suggest = context.user_data['why_suggest']
 
     response_message = (f"🎬 *Movie Introduction:*\n\n"
-                        f"#IntroduceYourMovie\n\n"
+                        f"#IntroducedMovie\n\n"
+                        f"The user @{username} suggested: \n\n"
                         f"*Name:* {movie_name}\n"
                         f"*Basic Info:* {movie_info}\n"
                         f"*Additional Info:* {movie_information}\n"
