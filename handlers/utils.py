@@ -1,6 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
+
 def handle_response(text: str) -> str:
     processed: str = text.lower()
 
@@ -10,6 +11,7 @@ def handle_response(text: str) -> str:
         return 'بریم که یه فیلم خوب ببینیم'
     else:
         return 'نمی فهمم چی میگی:)'
+
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message_type = update.message.chat.type
@@ -22,6 +24,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         response: str = handle_response(text)
 
     await update.message.reply_text(response)
+
 
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Error: {update.message} caused by: {context.error}')

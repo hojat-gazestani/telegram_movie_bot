@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
-MOVIE_NAME_FA, MOVIE_NAME_EN, MOVIE_YEAR, MOVIE_CONT, DIRECTOR_NAME, MOVIE_RATE, MOVIE_PICTURE, WHY_SUGGEST, MOVIE_AWARDS, MOVIE_PICTURE = range(9)
+MOVIE_NAME_FA, MOVIE_NAME_EN, MOVIE_YEAR, MOVIE_CONT, DIRECTOR_NAME, MOVIE_RATE, MOVIE_PICTURE, WHY_SUGGEST, MOVIE_AWARDS, MOVIE_PICTURE = range(10)
 
 
 async def get_movie_name_fa(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
