@@ -65,7 +65,7 @@ def main() -> None:
     )
     app.add_handler(MessageHandler(filters.Regex(f"^{RULES_OPTION}$"), rule_command))
 
-    #app.add_handler(MessageHandler(filters.TEXT, handle_message))
+    app.add_handler(MessageHandler(filters.TEXT, handle_message))
 
     print("Polling ...")
     app.run_polling(poll_interval=0.5)
