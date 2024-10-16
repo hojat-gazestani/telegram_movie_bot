@@ -17,7 +17,7 @@ from telegram.ext import (
 ) = range(9)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def introduce_movie(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text("لطفا نام فارسی فیلم را وارد کنید:")
     return MOVIE_NAME_FA
 

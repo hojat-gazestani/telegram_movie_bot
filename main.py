@@ -10,6 +10,7 @@ from telegram.ext import (
 )
 
 from handlers.movie_conversation import *
+from handlers.commands import start_command, rule_command
 
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
 
@@ -18,8 +19,12 @@ def main() -> None:
     print("Starting bot...")
     app = Application.builder().token(TOKEN).build()
 
+    app.add_handler(CommandHandler("start", start_command))
+    app.add_handler(CommandHandler("rule", rule_command))
+    app.add_handler(CommandHandler("cancel", cancel))
+
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("start", start)],
+        entry_points=[CommandHandler("introduce_movie", introduce_movie)],
         states={
             MOVIE_NAME_FA: [MessageHandler(filters.TEXT, get_movie_name_fa)],
             MOVIE_NAME_EN: [MessageHandler(filters.TEXT, get_movie_name_en)],
