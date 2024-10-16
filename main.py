@@ -98,7 +98,6 @@ async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo_file, caption=response_message, parse_mode='Markdown')
 
-
     # Clear user data after processing
     context.user_data.clear()
 
