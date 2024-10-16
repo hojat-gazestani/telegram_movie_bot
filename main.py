@@ -17,7 +17,7 @@ from handlers.commands import (
     podcast_command,
 )
 from handlers.utils import handle_message
-
+from handlers.voting_pool import show_voting_pool, vote_for_movie
 
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
 BOT_USERNAME: Final = os.getenv("BOT_USERNAME")
@@ -36,6 +36,8 @@ def main() -> None:
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CommandHandler("rule", rule_command))
     app.add_handler(CommandHandler("cancel", cancel))
+    app.add_handler(CommandHandler("voting_pool", show_voting_pool))
+    app.add_handler(CommandHandler("vote_for_movie", vote_for_movie))
 
     # ConversationHandler for introducing a movie
     conv_handler = ConversationHandler(

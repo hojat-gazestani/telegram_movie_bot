@@ -3,6 +3,7 @@ from telegram.ext import (
     ConversationHandler,
     ContextTypes,
 )
+from handlers.voting_pool import add_to_voting_pool
 
 (
     MOVIE_NAME_FA,
@@ -101,6 +102,8 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             f"*جوایز:* {movie_awards}\n"
             f"* \n نظر شخصی و دلیل پیشنهاد\n:* {why_suggest}\n"
         )
+
+        add_to_voting_pool(movie_name_fa, username)
 
         await context.bot.send_photo(
             chat_id=update.effective_chat.id,
