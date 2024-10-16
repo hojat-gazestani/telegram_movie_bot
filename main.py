@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv
+import logging
 from typing import Final
 from telegram.ext import (
     Application,
@@ -19,6 +21,14 @@ from handlers.commands import (
 from handlers.utils import handle_message
 from handlers.voting_pool import show_voting_pool, vote_for_movie
 
+# Initialize logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
+
+load_dotenv()
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
 BOT_USERNAME: Final = os.getenv("BOT_USERNAME")
 
@@ -30,7 +40,7 @@ RULES_OPTION = "📜 قوانین گروه"
 
 
 def main() -> None:
-    print("Starting bot...")
+    logger.info("Starting bot...")
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start_command))
@@ -65,9 +75,9 @@ def main() -> None:
     )
     app.add_handler(MessageHandler(filters.Regex(f"^{RULES_OPTION}$"), rule_command))
 
-    app.add_handler(MessageHandler(filters.TEXT, handle_message))
+    # app.add_handler(MessageHandler(filters.TEXT, handle_message))
 
-    print("Polling ...")
+    logger.info("Polling started...")
     app.run_polling(poll_interval=0.5)
 
 
