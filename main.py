@@ -19,6 +19,8 @@ from handlers.commands import (
 from handlers.utils import handle_message
 
 
+
+load_dotenv()
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
 BOT_USERNAME: Final = os.getenv("BOT_USERNAME")
 
