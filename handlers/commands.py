@@ -12,7 +12,10 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
     await update.message.reply_text(
-        "من ربات گروه فرهنگی دنالی هستم. چطور میتونم کمکت کنم؟",
+        """من ربات گروه فرهنگی دنالی هستم. چطور میتونم کمکت کنم؟
+        در هر مرحله ایی میتوانید با /cancel کنسل کنید
+
+        """,
         reply_markup=reply_markup,
     )
 

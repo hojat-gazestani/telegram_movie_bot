@@ -10,9 +10,21 @@ from telegram.ext import (
 )
 
 from handlers.movie_conversation import *
-from handlers.commands import start_command, rule_command
+from handlers.commands import (
+    start_command,
+    rule_command,
+    movie_command,
+    book_command,
+    podcast_command,
+)
 
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
+
+# Text options for keyboard
+MOVIE_OPTION = "🎬 معرفی فیلم"
+BOOK_OPTION = "📚 معرفی کتاب"
+PODCAST_OPTION = "🎙️ معرفی پادکست"
+RULES_OPTION = "📜 قوانین گروه"
 
 
 def main() -> None:
@@ -23,8 +35,11 @@ def main() -> None:
     app.add_handler(CommandHandler("rule", rule_command))
     app.add_handler(CommandHandler("cancel", cancel))
 
+    # ConversationHandler for introducing a movie
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("introduce_movie", introduce_movie)],
+        entry_points=[
+            MessageHandler(filters.Regex(f"^{MOVIE_OPTION}$"), introduce_movie)
+        ],
         states={
             MOVIE_NAME_FA: [MessageHandler(filters.TEXT, get_movie_name_fa)],
             MOVIE_NAME_EN: [MessageHandler(filters.TEXT, get_movie_name_en)],
@@ -40,6 +55,12 @@ def main() -> None:
     )
 
     app.add_handler(conv_handler)
+    app.add_handler(MessageHandler(filters.Regex(f"^{BOOK_OPTION}$"), book_command))
+    app.add_handler(
+        MessageHandler(filters.Regex(f"^{PODCAST_OPTION}$"), podcast_command)
+    )
+    app.add_handler(MessageHandler(filters.Regex(f"^{RULES_OPTION}$"), rule_command))
+
     print("Polling ...")
     app.run_polling(poll_interval=0.5)
 
