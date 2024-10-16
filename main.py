@@ -1,6 +1,6 @@
 import os
 from typing import Final
-
+from dotenv import load_dotenv
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -18,6 +18,9 @@ from handlers.commands import (
     podcast_command,
 )
 
+
+
+load_dotenv()
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
 
 # Text options for keyboard
