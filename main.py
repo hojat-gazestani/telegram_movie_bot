@@ -1,6 +1,5 @@
 import os
 from typing import Final
-from dotenv import load_dotenv
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -17,11 +16,11 @@ from handlers.commands import (
     book_command,
     podcast_command,
 )
+from handlers.utils import handle_message
 
 
-
-load_dotenv()
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
+BOT_USERNAME: Final = os.getenv("BOT_USERNAME")
 
 # Text options for keyboard
 MOVIE_OPTION = "🎬 معرفی فیلم"
@@ -63,6 +62,8 @@ def main() -> None:
         MessageHandler(filters.Regex(f"^{PODCAST_OPTION}$"), podcast_command)
     )
     app.add_handler(MessageHandler(filters.Regex(f"^{RULES_OPTION}$"), rule_command))
+
+    app.add_handler(MessageHandler(filters.TEXT, handle_message))
 
     print("Polling ...")
     app.run_polling(poll_interval=0.5)

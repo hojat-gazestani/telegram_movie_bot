@@ -1,6 +1,13 @@
 # Commands
+import os
+from typing import Final
+
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes
+
+from handlers.utils import handle_response
+
+BOT_USERNAME: Final = os.getenv("BOT_USERNAME")
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -46,3 +53,26 @@ async def book_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 async def podcast_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("شروع معرفی پادکست جدید")
+
+
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    message_type = update.message.chat.type
+    text = update.message.text
+
+    print(f'User ({update.message.chat.id}) in {message_type}: "{text}"')
+
+    if message_type == "group":
+        if BOT_USERNAME in text:
+            new_text: str = text.replace(BOT_USERNAME, "").strip()
+            response: str = handle_response(new_text)
+        else:
+            return
+    else:
+        response: str = handle_response(text)
+
+    print("Bot:", response)
+    await update.message.reply_text(response)
+
+
+async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print(f"Error: {update.message} caused by: {context.error}")
