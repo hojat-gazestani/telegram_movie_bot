@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
     MOVIE_PICTURE,
 ) = range(9)
 
+ALLOWED_CHAT_IDS = [-1001151426065, -1001245820221]
+
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
@@ -34,6 +36,16 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def introduce_movie(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+
+    if update.message.chat_id != ALLOWED_CHAT_IDS:
+        logger.warning(
+            f"Unauthorized access attempt from chat: {update.message.chat_id}"
+        )
+        await update.message.reply_text(
+            "با حجت تماس بگیرید.  شما به این بات دسترسی ندارید."
+        )
+        return ConversationHandler.END
+
     logger.info(
         f"User {update.message.from_user.username} started introducing a movie."
     )
