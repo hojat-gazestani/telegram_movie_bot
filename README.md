@@ -46,6 +46,11 @@ docker build -t telegram_movie_bot .
 docker run -d --name telegram_movie_bot telegram_movie_bot
 ```
 
+3. Run using docker compose:
+```sh
+docker compose -f docker/docker-compose.yml up -d
+```
+
 # License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
