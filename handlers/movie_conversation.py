@@ -7,6 +7,7 @@ from telegram.ext import (
 
 import psycopg2
 from psycopg2 import sql
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def introduce_movie(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
-    #if update.message.chat_id != ALLOWED_CHAT_IDS:
+    # if update.message.chat_id != ALLOWED_CHAT_IDS:
     #    logger.warning(
     #        f"Unauthorized access attempt from chat: {update.message.chat_id}"
     #    )
@@ -223,7 +224,7 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
         logger.info(
             f"Movie introduced: {movie_name_fa} ({movie_name_en}) by {username}"
-       )
+        )
 
         try:
             await context.bot.send_photo(
@@ -244,43 +245,52 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             )
             return MOVIE_PICTURE
 
-        logger.info(
-            f"{username} writing {movie_name_en} into the database."
-        )
-        # Connect to your PostgreSQL database
-        conn = psycopg2.connect(
-            host='movie_bot_db',
-            database='movie_bot',
-            user='movie_bot_user',
-            password='sMNP7wCoxJNF5POND8gqQ'
-        )
+        logger.info(f"{username} writing {movie_name_en} into the database.")
+
+        try:
+            os.getenv("DENALIE_MOVIE_BOT_TOKEN")
+            conn = psycopg2.connect(
+                host="movie_bot_db",
+                database="movie_bot",
+                user="movie_bot_user",
+                password=os.getenv("DB_PASS"),
+            )
+
+        except Exception as e:
+            logger.error(f"Database connection failed: {e}")
+
         cursor = conn.cursor()
 
- 
-        # Insert the data into the movies table
-        insert_query = sql.SQL("""
+        insert_query = sql.SQL(
+            """
             INSERT INTO movies (movie_name_fa, movie_name_en, movie_year, movie_country,
                                 director_name, movie_ratings, why_suggest, movie_awards)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """)
-        
-        # Execute the insert query
-        cursor.execute(insert_query, (
-            movie_name_fa, movie_name_en, movie_year, movie_country,
-            director_name, movie_ratings, why_suggest, movie_awards
-        ))
-        
-        # Commit the transaction
-        conn.commit()
-        
-        # Close the cursor and connection
-        cursor.close()
-        conn.close()
-
-        logger.info(
-            f"{username} succesfuly wrote {movie_name_en} into the database."
+        """
         )
 
+        try:
+            cursor.execute(
+                insert_query,
+                (
+                    movie_name_fa,
+                    movie_name_en,
+                    movie_year,
+                    movie_country,
+                    director_name,
+                    movie_ratings,
+                    why_suggest,
+                    movie_awards,
+                ),
+            )
+            conn.commit()
+        except Exception as e:
+            logger.error(f"Failed to insert movie into the database: {e}")
+        finally:
+            cursor.close()
+            conn.close()
+
+        logger.info(f"{username} succesfuly wrote {movie_name_en} into the database.")
 
     else:
         logger.warning(f"No photo received from {update.message.from_user.username}")
