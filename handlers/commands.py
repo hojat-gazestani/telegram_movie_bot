@@ -72,7 +72,3 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     print("Bot:", response)
     await update.message.reply_text(response)
-
-
-async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print(f"Error: {update.message} caused by: {context.error}")

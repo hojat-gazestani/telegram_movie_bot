@@ -18,7 +18,7 @@ from handlers.commands import (
     book_command,
     podcast_command,
 )
-from handlers.utils import handle_message
+from handlers.utils import error_handler
 from handlers.voting_pool import show_voting_pool, vote_for_movie
 
 # Initialize logging
@@ -66,6 +66,7 @@ def main() -> None:
             MOVIE_PICTURE: [MessageHandler(filters.PHOTO, get_movie_picture)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
+        conversation_timeout=300,
     )
 
     app.add_handler(conv_handler)
@@ -75,8 +76,7 @@ def main() -> None:
     )
     app.add_handler(MessageHandler(filters.Regex(f"^{RULES_OPTION}$"), rule_command))
 
-    # app.add_handler(MessageHandler(filters.TEXT, handle_message))
-
+    app.add_error_handler(error_handler)
     logger.info("Polling started...")
     app.run_polling(poll_interval=0.5)
 
