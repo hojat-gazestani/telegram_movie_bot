@@ -6,4 +6,22 @@ services:
       dockerfile: docker/Dockerfile
     container_name: movie_bot
     restart: always
+    depends_on:
+      - db
+    environment:
+      POSTGRES_USER: movie_bot_user
+      POSTGRES_PASSWORD: sMNP7wCoxJNF5POND8gqQ
+      POSTGRES_DB: movie_bot
+  db:
+    image: postgres:15
+    container_name: movie_bot_db
+    restart: always
+    environment:
+      POSTGRES_USER: movie_bot_user
+      POSTGRES_PASSWORD: sMNP7wCoxJNF5POND8gqQ
+      POSTGRES_DB: movie_bot
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
+volumes:
+  pgdata:
