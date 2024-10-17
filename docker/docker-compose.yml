@@ -1,0 +1,9 @@
+---
+services:
+  bot:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: movie_bot
+    restart: always
+
