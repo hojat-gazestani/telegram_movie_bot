@@ -37,14 +37,14 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def introduce_movie(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
-    if update.message.chat_id != ALLOWED_CHAT_IDS:
-        logger.warning(
-            f"Unauthorized access attempt from chat: {update.message.chat_id}"
-        )
-        await update.message.reply_text(
-            "با حجت تماس بگیرید.  شما به این بات دسترسی ندارید."
-        )
-        return ConversationHandler.END
+    #if update.message.chat_id != ALLOWED_CHAT_IDS:
+    #    logger.warning(
+    #        f"Unauthorized access attempt from chat: {update.message.chat_id}"
+    #    )
+    #    await update.message.reply_text(
+    #        "با حجت تماس بگیرید.  شما به این بات دسترسی ندارید."
+    #    )
+    #    return ConversationHandler.END
 
     logger.info(
         f"User {update.message.from_user.username} started introducing a movie."
@@ -208,7 +208,7 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
         response_message = (
             f"🎬 *#پیشنهادفیلم :*\n\n"
-            f"*ایشون*@{username} فیلم زیر را پیشنهاد داده: \n\n"
+            f"*ایشون* @{username} فیلم زیر را پیشنهاد داده: \n\n"
             f"*نام فارسی:* {movie_name_fa}\n"
             f"*نام انگلیسی:* {movie_name_en}\n"
             f"*سال ساخت :* {movie_year}\n"
