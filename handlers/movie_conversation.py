@@ -43,7 +43,7 @@ async def save_movie_data(movie_data):
                 insert_query = sql.SQL(
                     """
                     INSERT INTO movies (name_fa, name_en, year, country, director, ratings, reason, awards)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """
                 )
                 cursor.execute(
