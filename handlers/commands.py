@@ -36,7 +36,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 async def rule_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
         """
-    قوانین گروه فرهنگی دنالی
+    قوانین معرفی فیلم:
     ۱. حتما فیلمی معرفی کنید که شخصا دیده باشید
     ۲. در صورتی که وارد لیست سیاه شوید دیگر امکان پیشنهاد فیلم برای شما وجود نخواهد داشت
 """
