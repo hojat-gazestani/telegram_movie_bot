@@ -8,6 +8,14 @@ from telegram.ext import (
 import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +30,42 @@ logger = logging.getLogger(__name__)
     MOVIE_AWARDS,
     MOVIE_PICTURE,
 ) = range(9)
+
+
+async def save_movie_data(movie_data):
+    """Save movie data into the PostgreSQL database."""
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD
+        )
+        with conn:
+            with conn.cursor() as cursor:
+                insert_query = sql.SQL(
+                    """
+                    INSERT INTO movies (name_fa, name_en, year, country, director, ratings, reason, awards)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """
+                )
+                cursor.execute(
+                    insert_query,
+                    (
+                        movie_data["movie_name_fa"],
+                        movie_data["movie_name_en"],
+                        movie_data["movie_year"],
+                        movie_data["movie_country"],
+                        movie_data["director_name"],
+                        movie_data["movie_ratings"],
+                        movie_data["why_suggest"],
+                        movie_data["movie_awards"],
+                    ),
+                )
+                logger.info("Movie data saved successfully.")
+    except Exception as e:
+        logger.error(f"Error saving movie data: {e}")
+    finally:
+        if conn:
+            conn.close()
+
 
 ALLOWED_CHAT_IDS = [-1001151426065, -1001245820221]
 
@@ -199,32 +243,34 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         username = update.message.from_user.username or "unknown"
         logger.info(f"User {username} uploaded a movie picture")
 
-        # Prepare formatted response
-        movie_name_fa = context.user_data["movie_name_fa"]
-        movie_name_en = context.user_data["movie_name_en"]
-        movie_year = context.user_data["movie_year"]
-        movie_country = context.user_data["movie_country"]
-        director_name = context.user_data["director_name"]
-        movie_ratings = context.user_data["movie_ratings"]
-        why_suggest = context.user_data["why_suggest"]
-        movie_awards = context.user_data["movie_awards"]
+        movie_data = {
+            "movie_name_fa": context.user_data["movie_name_fa"],
+            "movie_name_en": context.user_data["movie_name_en"],
+            "movie_year": context.user_data["movie_year"],
+            "movie_country": context.user_data["movie_country"],
+            "director_name": context.user_data["director_name"],
+            "movie_ratings": context.user_data["movie_ratings"],
+            "why_suggest": context.user_data["why_suggest"],
+            "movie_awards": context.user_data["movie_awards"],
+            "movie_picture": photo_file,
+        }
+
+        await save_movie_data(movie_data)
 
         response_message = (
             f"🎬 *#پیشنهادفیلم :*\n\n"
             f"*ایشون* @{username} فیلم زیر را پیشنهاد داده: \n\n"
-            f"*نام فارسی:* {movie_name_fa}\n"
-            f"*نام انگلیسی:* {movie_name_en}\n"
-            f"*سال ساخت :* {movie_year}\n"
-            f"*کشور سازنده:* {movie_country}\n"
-            f"*کارگردان:* {director_name}\n"
-            f"*امتیازات:* {movie_ratings}\n"
-            f"*جوایز:* {movie_awards}\n"
-            f"* \n نظر شخصی و دلیل پیشنهاد\n:* {why_suggest}\n"
+            f"*نام فارسی:*  {movie_data['movie_name_fa']}\n"
+            f"*نام انگلیسی:* {movie_data['movie_name_en']}\n"
+            f"*سال ساخت :* {movie_data['movie_year']}\n"
+            f"*کشور سازنده:* {movie_data['movie_country']}\n"
+            f"*کارگردان:* {movie_data['director_name']}\n"
+            f"*امتیازات:* {movie_data['movie_ratings']}\n"
+            f"*جوایز:* {movie_data['movie_awards']}\n"
+            f"* \n نظر شخصی و دلیل پیشنهاد\n:* {movie_data['why_suggest']}\n"
         )
 
-        logger.info(
-            f"Movie introduced: {movie_name_fa} ({movie_name_en}) by {username}"
-        )
+        logger.info(f"Movie introduced: ({movie_data['movie_name_en']}) by {username}")
 
         try:
             await context.bot.send_photo(
@@ -244,53 +290,6 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
                 "متاسفانه، ارسال عکس با خطا مواجه شد. لطفا دوباره تلاش کنید."
             )
             return MOVIE_PICTURE
-
-        logger.info(f"{username} writing {movie_name_en} into the database.")
-
-        try:
-            os.getenv("DENALIE_MOVIE_BOT_TOKEN")
-            conn = psycopg2.connect(
-                host="movie_bot_db",
-                database="movie_bot",
-                user="movie_bot_user",
-                password=os.getenv("DB_PASS"),
-            )
-
-        except Exception as e:
-            logger.error(f"Database connection failed: {e}")
-
-        cursor = conn.cursor()
-
-        insert_query = sql.SQL(
-            """
-            INSERT INTO movies (movie_name_fa, movie_name_en, movie_year, movie_country,
-                                director_name, movie_ratings, why_suggest, movie_awards)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """
-        )
-
-        try:
-            cursor.execute(
-                insert_query,
-                (
-                    movie_name_fa,
-                    movie_name_en,
-                    movie_year,
-                    movie_country,
-                    director_name,
-                    movie_ratings,
-                    why_suggest,
-                    movie_awards,
-                ),
-            )
-            conn.commit()
-        except Exception as e:
-            logger.error(f"Failed to insert movie into the database: {e}")
-        finally:
-            cursor.close()
-            conn.close()
-
-        logger.info(f"{username} succesfuly wrote {movie_name_en} into the database.")
 
     else:
         logger.warning(f"No photo received from {update.message.from_user.username}")
