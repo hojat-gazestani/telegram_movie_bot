@@ -9,6 +9,7 @@ A Telegram bot that allows users to search for and get information about movies.
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Dockerization](#dockerization)
+- [Database](#database)
 - [License](#license)
 
 ## Features
