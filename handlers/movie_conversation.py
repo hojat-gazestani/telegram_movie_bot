@@ -113,11 +113,18 @@ async def introduce_movie(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     #    )
     #    return ConversationHandler.END
 
-    logger.info(
-        f"User {update.message.from_user.username} started introducing a movie."
-    )
-    await update.message.reply_text("لطفا نام فارسی فیلم را وارد کنید:")
-    return MOVIE_NAME_FA
+    try:
+        logger.info(
+            f"User {update.message.from_user.username} started introducing a movie."
+        )
+        await update.message.reply_text("لطفا نام فارسی فیلم را وارد کنید:")
+        return MOVIE_NAME_FA
+    except Exception as e:
+        logger.error(f"Error in introducing movie: {e}")
+        await update.message.reply_text(
+            "متاسفانه، در دریافت نام فیلم فارسی مشکلی پیش آمد. لطفا دوباره تلاش کنید."
+        )
+        return ConversationHandler.END
 
 
 async def get_movie_name_fa(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -209,15 +216,22 @@ async def get_director_name(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
 
 async def get_movie_ratings(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    movie_ratings = update.message.text
-    context.user_data["movie_ratings"] = movie_ratings
-    logger.info(
-        f"User {update.message.from_user.username} entered movie ratings: {movie_ratings}"
-    )
-    await update.message.reply_text(
-        "نظر شخصی شما و دلیل پیشنهاد فیلم و اینکه به نظرت بعد از فیلم میشه در چه موردهایی صحبت و تبادل نظر کرد.:"
-    )
-    return WHY_SUGGEST
+    try:
+        movie_ratings = update.message.text
+        context.user_data["movie_ratings"] = movie_ratings
+        logger.info(
+            f"User {update.message.from_user.username} entered movie ratings: {movie_ratings}"
+        )
+        await update.message.reply_text(
+            "نظر شخصی شما و دلیل پیشنهاد فیلم و اینکه به نظرت بعد از فیلم میشه در چه موردهایی صحبت و تبادل نظر کرد.:"
+        )
+        return WHY_SUGGEST
+    except Exception as e:
+        logger.error(f"Error in getting movie ratings: {e}")
+        await update.message.reply_text(
+            "متاسفانه، در دریافت امتیازات فیلم مشکلی پیش آمد. لطفا دوباره تلاش کنید."
+        )
+        return MOVIE_RATINGS
 
 
 async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
