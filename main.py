@@ -32,6 +32,7 @@ load_dotenv()
 TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
 BOT_USERNAME: Final = os.getenv("BOT_USERNAME")
 
+
 # Text options for keyboard
 MOVIE_OPTION = "🎬 معرفی فیلم"
 BOOK_OPTION = "📚 معرفی کتاب"
