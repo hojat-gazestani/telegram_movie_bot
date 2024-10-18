@@ -45,7 +45,7 @@ def main() -> None:
 
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CommandHandler("rule", rule_command))
-    app.add_handler(CommandHandler("cancel", cancel))
+    # app.add_handler(CommandHandler("cancel", cancel))
     app.add_handler(CommandHandler("voting_pool", show_voting_pool))
     app.add_handler(CommandHandler("vote_for_movie", vote_for_movie))
 
