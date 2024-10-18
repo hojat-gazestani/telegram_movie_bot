@@ -93,10 +93,15 @@ ALLOWED_CHAT_IDS = [-1001151426065, -1001245820221]
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Cancels and ends the conversation."""
     user = update.message.from_user
-    logger.info("شما %s وارد کردن اطلاعات رو کنسل کردید.", user.first_name)
-    await update.message.reply_text(
-        "بدرود،‌تا دیداری دیگر.", reply_markup=ReplyKeyboardRemove()
-    )
+    logger.info("User %s has canceled the conversation.", user.first_name)
+
+    # Skip deleting the cancel message
+    if update.message.text == "/cancel":
+        logger.info("Skipping deletion of the /cancel command.")
+    else:
+        await update.message.delete()
+
+    await update.message.reply_text("بدرود.", reply_markup=ReplyKeyboardRemove())
 
     return ConversationHandler.END
 
