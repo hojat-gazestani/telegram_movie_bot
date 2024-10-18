@@ -32,9 +32,29 @@ logger = logging.getLogger(__name__)
 ) = range(9)
 
 
+def is_persian_numeral(num_str):
+    """Check if the string contains Persian numerals."""
+    persian_numerals = "۰۱۲۳۴۵۶۷۸۹"
+    return any(char in persian_numerals for char in num_str)
+
+
+def convert_persian_to_arabic(num_str):
+    """Convert Persian numerals to Arabic numerals."""
+    persian_numerals = "۰۱۲۳۴۵۶۷۸۹"
+    arabic_numerals = "0123456789"
+
+    translation_table = str.maketrans(persian_numerals, arabic_numerals)
+    return num_str.translate(translation_table)
+
+
 async def save_movie_data(movie_data):
     """Save movie data into the PostgreSQL database."""
     try:
+
+        movie_year = movie_data["movie_year"]
+        if is_persian_numeral(movie_year):
+            movie_year = convert_persian_to_arabic(movie_year)
+
         conn = psycopg2.connect(
             host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD
         )
