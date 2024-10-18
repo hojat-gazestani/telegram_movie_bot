@@ -71,7 +71,7 @@ async def save_movie_data(movie_data):
                     (
                         movie_data["movie_name_fa"],
                         movie_data["movie_name_en"],
-                        movie_data["movie_year"],
+                        movie_year,
                         movie_data["movie_country"],
                         movie_data["director_name"],
                         movie_data["movie_ratings"],
