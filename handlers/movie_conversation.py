@@ -58,7 +58,7 @@ async def fetch_movie_names():
 
 async def create_voting_poll(movie_names):
     """Create a Telegram voting poll with the given movie names."""
-    poll_question = "Which movie do you prefer?"
+    poll_question = fetch_movie_names()
     try:
         # Send poll request to Telegram API
         async with httpx.AsyncClient() as client:
