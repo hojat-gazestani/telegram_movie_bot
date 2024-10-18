@@ -1,6 +1,6 @@
 # Denalie Movie bot
 import logging
-from telegram import Update
+from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import (
     ConversationHandler,
     ContextTypes,
@@ -211,6 +211,7 @@ async def get_movie_year(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         bot_message = await update.message.reply_text(
             "لطفا سال ساخت را به درستی وارد کنید (مثلاً 2020):"
         )
+        context.user_data["bot_message_id"] = bot_message.message_id
         return MOVIE_YEAR  # Retry the same step
     except Exception as e:
         logger.error(f"Error in getting movie year: {e}")
