@@ -92,14 +92,13 @@ ALLOWED_CHAT_IDS = [-1001151426065, -1001245820221]
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    try:
-        logger.info(f"User {update.message.from_user.username} canceled the operation.")
-        await update.message.reply_text("وارد کردن اطلاعات توسط شما کنسل شد.")
-    except Exception as e:
-        logger.error(f"Failed to send cancellation message: {e}")
-        await update.message.reply_text(
-            "متاسفانه، عملیات کنسل نشد. لطفا دوباره تلاش کنید."
-        )
+    """Cancels and ends the conversation."""
+    user = update.message.from_user
+    logger.info("User %s canceled the conversation.", user.first_name)
+    await update.message.reply_text(
+        "Bye! I hope we can talk again some day.", reply_markup=ReplyKeyboardRemove()
+    )
+
     return ConversationHandler.END
 
 
@@ -393,7 +392,7 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "movie_picture": photo_file,
         }
 
-        await save_movie_data(movie_data)
+        # await save_movie_data(movie_data)
 
         response_message = (
             f"🎬 *#پیشنهادفیلم :*\n\n"
