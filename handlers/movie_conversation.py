@@ -5,6 +5,17 @@ from telegram.ext import (
     ContextTypes,
 )
 
+import psycopg2
+from psycopg2 import sql
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +30,62 @@ logger = logging.getLogger(__name__)
     MOVIE_AWARDS,
     MOVIE_PICTURE,
 ) = range(9)
+
+
+def is_persian_numeral(num_str):
+    """Check if the string contains Persian numerals."""
+    persian_numerals = "۰۱۲۳۴۵۶۷۸۹"
+    return any(char in persian_numerals for char in num_str)
+
+
+def convert_persian_to_arabic(num_str):
+    """Convert Persian numerals to Arabic numerals."""
+    persian_numerals = "۰۱۲۳۴۵۶۷۸۹"
+    arabic_numerals = "0123456789"
+
+    translation_table = str.maketrans(persian_numerals, arabic_numerals)
+    return num_str.translate(translation_table)
+
+
+async def save_movie_data(movie_data):
+    """Save movie data into the PostgreSQL database."""
+    try:
+
+        movie_year = movie_data["movie_year"]
+        if is_persian_numeral(movie_year):
+            movie_year = convert_persian_to_arabic(movie_year)
+
+        conn = psycopg2.connect(
+            host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD
+        )
+        with conn:
+            with conn.cursor() as cursor:
+                insert_query = sql.SQL(
+                    """
+                    INSERT INTO movies (movie_name_fa, movie_name_en, movie_year, movie_country, director_name, movie_ratings, why_suggest, movie_awards)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """
+                )
+                cursor.execute(
+                    insert_query,
+                    (
+                        movie_data["movie_name_fa"],
+                        movie_data["movie_name_en"],
+                        movie_year,
+                        movie_data["movie_country"],
+                        movie_data["director_name"],
+                        movie_data["movie_ratings"],
+                        movie_data["why_suggest"],
+                        movie_data["movie_awards"],
+                    ),
+                )
+                logger.info("Movie data saved successfully.")
+    except Exception as e:
+        logger.error(f"Error saving movie data: {e}")
+    finally:
+        if conn:
+            conn.close()
+
 
 ALLOWED_CHAT_IDS = [-1001151426065, -1001245820221]
 
@@ -37,7 +104,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def introduce_movie(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
-    #if update.message.chat_id != ALLOWED_CHAT_IDS:
+    # if update.message.chat_id != ALLOWED_CHAT_IDS:
     #    logger.warning(
     #        f"Unauthorized access attempt from chat: {update.message.chat_id}"
     #    )
@@ -196,32 +263,34 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         username = update.message.from_user.username or "unknown"
         logger.info(f"User {username} uploaded a movie picture")
 
-        # Prepare formatted response
-        movie_name_fa = context.user_data["movie_name_fa"]
-        movie_name_en = context.user_data["movie_name_en"]
-        movie_year = context.user_data["movie_year"]
-        movie_country = context.user_data["movie_country"]
-        director_name = context.user_data["director_name"]
-        movie_ratings = context.user_data["movie_ratings"]
-        why_suggest = context.user_data["why_suggest"]
-        movie_awards = context.user_data["movie_awards"]
+        movie_data = {
+            "movie_name_fa": context.user_data["movie_name_fa"],
+            "movie_name_en": context.user_data["movie_name_en"],
+            "movie_year": context.user_data["movie_year"],
+            "movie_country": context.user_data["movie_country"],
+            "director_name": context.user_data["director_name"],
+            "movie_ratings": context.user_data["movie_ratings"],
+            "why_suggest": context.user_data["why_suggest"],
+            "movie_awards": context.user_data["movie_awards"],
+            "movie_picture": photo_file,
+        }
+
+        await save_movie_data(movie_data)
 
         response_message = (
             f"🎬 *#پیشنهادفیلم :*\n\n"
             f"*ایشون* @{username} فیلم زیر را پیشنهاد داده: \n\n"
-            f"*نام فارسی:* {movie_name_fa}\n"
-            f"*نام انگلیسی:* {movie_name_en}\n"
-            f"*سال ساخت :* {movie_year}\n"
-            f"*کشور سازنده:* {movie_country}\n"
-            f"*کارگردان:* {director_name}\n"
-            f"*امتیازات:* {movie_ratings}\n"
-            f"*جوایز:* {movie_awards}\n"
-            f"* \n نظر شخصی و دلیل پیشنهاد\n:* {why_suggest}\n"
+            f"*نام فارسی:*  {movie_data['movie_name_fa']}\n"
+            f"*نام انگلیسی:* {movie_data['movie_name_en']}\n"
+            f"*سال ساخت :* {movie_data['movie_year']}\n"
+            f"*کشور سازنده:* {movie_data['movie_country']}\n"
+            f"*کارگردان:* {movie_data['director_name']}\n"
+            f"*امتیازات:* {movie_data['movie_ratings']}\n"
+            f"*جوایز:* {movie_data['movie_awards']}\n"
+            f"* \n نظر شخصی و دلیل پیشنهاد\n:* {movie_data['why_suggest']}\n"
         )
 
-        logger.info(
-            f"Movie introduced: {movie_name_fa} ({movie_name_en}) by {username}"
-        )
+        logger.info(f"Movie introduced: ({movie_data['movie_name_en']}) by {username}")
 
         try:
             await context.bot.send_photo(
@@ -241,6 +310,7 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
                 "متاسفانه، ارسال عکس با خطا مواجه شد. لطفا دوباره تلاش کنید."
             )
             return MOVIE_PICTURE
+
     else:
         logger.warning(f"No photo received from {update.message.from_user.username}")
         await update.message.reply_text("لطفا یک عکس از فیلم ارسال کنید.")
