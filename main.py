@@ -48,6 +48,7 @@ def main() -> None:
     app.add_handler(CommandHandler("cancel", cancel))
     app.add_handler(CommandHandler("voting_pool", show_voting_pool))
     app.add_handler(CommandHandler("vote_for_movie", vote_for_movie))
+    app.add_handler(CommandHandler("create_voting_poll", create_voting_poll))
 
     # ConversationHandler for introducing a movie
     conv_handler = ConversationHandler(

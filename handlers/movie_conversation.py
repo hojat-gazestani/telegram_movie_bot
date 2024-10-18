@@ -5,10 +5,12 @@ from telegram.ext import (
     ContextTypes,
 )
 
+import httpx
 import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 import os
+from typing import Final
 
 load_dotenv()
 
@@ -16,6 +18,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
+TOKEN: Final = os.getenv("DENALIE_MOVIE_BOT_TOKEN")
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +33,48 @@ logger = logging.getLogger(__name__)
     MOVIE_AWARDS,
     MOVIE_PICTURE,
 ) = range(9)
+
+
+CHAT_ID = "-1001245820221"  # Chat ID where the poll will be sent
+
+
+async def fetch_movie_names():
+    """Fetch movie names from the PostgreSQL database."""
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD
+        )
+        with conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT movie_name_fa FROM movies")
+                movie_names = cursor.fetchall()
+                return [name[0] for name in movie_names]
+    except Exception as e:
+        logger.error(f"Error fetching movie names: {e}")
+    finally:
+        if conn:
+            conn.close()
+
+
+async def create_voting_poll(movie_names):
+    """Create a Telegram voting poll with the given movie names."""
+    poll_question = "Which movie do you prefer?"
+    try:
+        # Send poll request to Telegram API
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"https://api.telegram.org/bot{TOKEN}/sendPoll",
+                json={
+                    "chat_id": CHAT_ID,
+                    "question": poll_question,
+                    "options": movie_names,
+                    "is_anonymous": False,  # Set to True for anonymous voting
+                },
+            )
+            response.raise_for_status()  # Raise an error for bad responses
+            logger.info("Poll created successfully.")
+    except Exception as e:
+        logger.error(f"Error creating Telegram poll: {e}")
 
 
 def is_persian_numeral(num_str):
