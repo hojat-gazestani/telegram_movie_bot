@@ -114,6 +114,7 @@ async def introduce_movie(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     #    return ConversationHandler.END
 
     try:
+        await update.message.delete()
         logger.info(
             f"User {update.message.from_user.username} started introducing a movie."
         )
@@ -130,6 +131,7 @@ async def introduce_movie(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 async def get_movie_name_fa(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         movie_name_fa = update.message.text
+        await update.message.delete()
         logger.info(f"Received movie name (FA): {movie_name_fa}")
         context.user_data["movie_name_fa"] = movie_name_fa
         await update.message.reply_text("لطفا نام انگلیسی فیلم را وارد کنید:")
@@ -145,6 +147,7 @@ async def get_movie_name_fa(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def get_movie_name_en(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         movie_name_en = update.message.text
+        await update.message.delete()
         logger.info(f"Received movie name (EN): {movie_name_en}")
         context.user_data["movie_name_en"] = movie_name_en
         await update.message.reply_text("لطفا سال ساخت فیلم را وارد کنید:")
@@ -160,6 +163,7 @@ async def get_movie_name_en(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def get_movie_year(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         movie_year = update.message.text
+        await update.message.delete()
         if not movie_year.isdigit() or not (1000 <= int(movie_year) <= 3000):
             raise ValueError("Invalid year format")
         context.user_data["movie_year"] = movie_year
@@ -184,6 +188,7 @@ async def get_movie_year(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 async def get_movie_country(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         movie_country = update.message.text
+        await update.message.delete()
         context.user_data["movie_country"] = movie_country
         logger.info(
             f"User {update.message.from_user.username} entered movie country: {movie_country}"
@@ -201,6 +206,7 @@ async def get_movie_country(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def get_director_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         director_name = update.message.text
+        await update.message.delete()
         context.user_data["director_name"] = director_name
         logger.info(
             f"User {update.message.from_user.username} entered director name: {director_name}"
@@ -218,6 +224,7 @@ async def get_director_name(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def get_movie_ratings(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         movie_ratings = update.message.text
+        await update.message.delete()
         context.user_data["movie_ratings"] = movie_ratings
         logger.info(
             f"User {update.message.from_user.username} entered movie ratings: {movie_ratings}"
@@ -237,6 +244,7 @@ async def get_movie_ratings(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         why_suggest = update.message.text
+        await update.message.delete()
         context.user_data["why_suggest"] = why_suggest
         logger.info(
             f"User {update.message.from_user.username} entered reason for suggestion: {why_suggest}"
@@ -254,6 +262,7 @@ async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 async def get_movie_awards(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         movie_awards = update.message.text
+        await update.message.delete()
         context.user_data["movie_awards"] = movie_awards
         logger.info(
             f"User {update.message.from_user.username} entered movie awards: {movie_awards}"
@@ -272,6 +281,7 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     if update.message.photo:
 
         photo_file = update.message.photo[-1].file_id
+        await update.message.delete()
         context.user_data["movie_picture"] = photo_file
 
         username = update.message.from_user.username or "unknown"
