@@ -130,7 +130,6 @@ async def introduce_movie(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             "متاسفانه، در دریافت نام فیلم فارسی مشکلی پیش آمد. لطفا دوباره تلاش کنید."
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return ConversationHandler.END
 
 
@@ -143,6 +142,7 @@ async def get_movie_name_fa(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
     try:
         movie_name_fa = update.message.text
+        await update.message.delete()
 
         logger.info(f"Received movie name (FA): {movie_name_fa}")
         context.user_data["movie_name_fa"] = movie_name_fa
@@ -157,7 +157,6 @@ async def get_movie_name_fa(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "متاسفانه، در دریافت نام فیلم فارسی مشکلی پیش آمد. لطفا دوباره تلاش کنید."
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_NAME_FA
 
 
@@ -170,6 +169,7 @@ async def get_movie_name_en(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
     try:
         movie_name_en = update.message.text
+        await update.message.delete()
 
         logger.info(f"Received movie name (EN): {movie_name_en}")
         context.user_data["movie_name_en"] = movie_name_en
@@ -184,7 +184,6 @@ async def get_movie_name_en(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "متاسفانه، در دریافت نام انگلیسی فیلم مشکلی پیش آمد. لطفا دوباره تلاش کنید."
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_NAME_EN
 
 
@@ -197,7 +196,7 @@ async def get_movie_year(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     try:
         movie_year = update.message.text
-
+        await update.message.delete()
         if not movie_year.isdigit() or not (1000 <= int(movie_year) <= 3000):
             raise ValueError("Invalid year format")
         context.user_data["movie_year"] = movie_year
@@ -208,13 +207,11 @@ async def get_movie_year(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             "لطفا نام کشور سازنده فیلم را وارد کنید:"
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_COUNTRY
     except ValueError:
         bot_message = await update.message.reply_text(
             "لطفا سال ساخت را به درستی وارد کنید (مثلاً 2020):"
         )
-        await update.message.delete()
         return MOVIE_YEAR  # Retry the same step
     except Exception as e:
         logger.error(f"Error in getting movie year: {e}")
@@ -222,7 +219,6 @@ async def get_movie_year(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             "متاسفانه، در دریافت سال ساخت فیلم مشکلی پیش آمد. لطفا دوباره تلاش کنید."
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_YEAR
 
 
@@ -235,6 +231,7 @@ async def get_movie_country(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
     try:
         movie_country = update.message.text
+        await update.message.delete()
 
         context.user_data["movie_country"] = movie_country
         logger.info(
@@ -244,7 +241,6 @@ async def get_movie_country(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "لطفا نام کارگردان فیلم را وارد کنید:"
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return DIRECTOR_NAME
     except Exception as e:
         logger.error(f"Error in getting movie country: {e}")
@@ -252,7 +248,6 @@ async def get_movie_country(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "متاسفانه، در دریافت کشور سازنده فیلم مشکلی پیش آمد. لطفا دوباره تلاش کنید."
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_COUNTRY
 
 
@@ -265,6 +260,7 @@ async def get_director_name(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
     try:
         director_name = update.message.text
+        await update.message.delete()
 
         context.user_data["director_name"] = director_name
         logger.info(
@@ -274,7 +270,6 @@ async def get_director_name(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "لطفا امتیازات فیلم (مثل IMDB) را وارد کنید:"
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_RATINGS
     except Exception as e:
         logger.error(f"Error in getting director name: {e}")
@@ -282,7 +277,6 @@ async def get_director_name(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "متاسفانه، در دریافت نام کارگردان فیلم مشکلی پیش آمد. لطفا دوباره تلاش کنید."
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return DIRECTOR_NAME
 
 
@@ -295,6 +289,7 @@ async def get_movie_ratings(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
     try:
         movie_ratings = update.message.text
+        await update.message.delete()
 
         context.user_data["movie_ratings"] = movie_ratings
         logger.info(
@@ -304,7 +299,6 @@ async def get_movie_ratings(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "نظر شخصی شما و دلیل پیشنهاد فیلم و اینکه به نظرت بعد از فیلم میشه در چه موردهایی صحبت و تبادل نظر کرد.:"
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return WHY_SUGGEST
     except Exception as e:
         logger.error(f"Error in getting movie ratings: {e}")
@@ -312,7 +306,6 @@ async def get_movie_ratings(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             "متاسفانه، در دریافت امتیازات فیلم مشکلی پیش آمد. لطفا دوباره تلاش کنید."
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_RATINGS
 
 
@@ -325,6 +318,7 @@ async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     try:
         why_suggest = update.message.text
+        await update.message.delete()
 
         context.user_data["why_suggest"] = why_suggest
         logger.info(
@@ -334,7 +328,6 @@ async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             "مهمترین جایزه دریافتی فیلم را وارد کنید:"
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_AWARDS
     except Exception as e:
         logger.error(f"Error in getting why suggest: {e}")
@@ -342,7 +335,6 @@ async def get_why_suggest(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             "متاسفانه، در دریافت دلیل پیشنهاد فیلم مشکلی پیش آمد. لطفا دوباره تلاش کنید."
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return WHY_SUGGEST
 
 
@@ -355,6 +347,7 @@ async def get_movie_awards(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
     try:
         movie_awards = update.message.text
+        await update.message.delete()
 
         context.user_data["movie_awards"] = movie_awards
         logger.info(
@@ -362,7 +355,6 @@ async def get_movie_awards(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         )
         bot_message = await update.message.reply_text("لطفا یک عکس از فیلم ارسال کنید.")
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_PICTURE
     except Exception as e:
         logger.error(f"Error in getting movie awards: {e}")
@@ -370,7 +362,6 @@ async def get_movie_awards(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             "متاسفانه، در دریافت یک عکس از فیلم مشکلی پیش آمد. لطفا دوباره تلاش کنید."
         )
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_PICTURE
 
 
@@ -384,7 +375,7 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     if update.message.photo:
 
         photo_file = update.message.photo[-1].file_id
-
+        await update.message.delete()
         context.user_data["movie_picture"] = photo_file
 
         username = update.message.from_user.username or "unknown"
@@ -430,7 +421,6 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
                 f"Movie suggestion conversation with {username} ended successfully."
             )
             context.user_data.clear()
-            await update.message.delete()
             return ConversationHandler.END
         except Exception as e:
             logger.error(f"Failed to send photo: {e}")
@@ -438,12 +428,10 @@ async def get_movie_picture(update: Update, context: ContextTypes.DEFAULT_TYPE) 
                 "متاسفانه، ارسال عکس با خطا مواجه شد. لطفا دوباره تلاش کنید."
             )
             context.user_data["bot_message_id"] = bot_message.message_id
-            await update.message.delete()
             return MOVIE_PICTURE
 
     else:
         logger.warning(f"No photo received from {update.message.from_user.username}")
         bot_message = await update.message.reply_text("لطفا یک عکس از فیلم ارسال کنید.")
         context.user_data["bot_message_id"] = bot_message.message_id
-        await update.message.delete()
         return MOVIE_PICTURE
